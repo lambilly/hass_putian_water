@@ -1,0 +1,14 @@
+{
+  "domain": "putian_water",
+  "name": "莆田水费",
+  "version": "1.0.0",
+  "code_owners": ["@lambilly"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/lambilly/putian_water",
+  "issue_tracker": "https://github.com/lambilly/putian_water/issues",
+  "requirements": ["aiohttp>=3.8.0"],
+  "iot_class": "cloud_polling",
+  "loggers": ["putian_water"],
+  "translations": ["zh-Hans"]
+}
