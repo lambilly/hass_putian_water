@@ -1,0 +1,10 @@
+{
+  "name": "莆田水费",
+  "render_readme": true,
+  "domains": ["sensor"],
+  "homeassistant": "2023.8.0",
+  "iot_class": "Cloud Polling",
+  "zip_release": false,
+  "filename": "putian_water.zip",
+  "hide_default_branch": true
+}
