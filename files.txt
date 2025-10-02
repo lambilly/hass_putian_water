@@ -1,4 +1,4 @@
-putian_water/
+hass_putian_water/
 ├── custom_components/
 │   └── putian_water/
 │       ├── __init__.py
@@ -13,3 +13,4 @@ putian_water/
 ├── info.md
 ├── hacs.json
 └── release.sh
+
