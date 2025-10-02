@@ -1,9 +1,15 @@
-custom_components/putian_water/
-├── __init__.py
-├── manifest.json
-├── config_flow.py
-├── sensor.py
-├── strings.json
-├── translations/
-│   └── zh-Hans.json
-└── icon.png
+putian_water/
+├── custom_components/
+│   └── putian_water/
+│       ├── __init__.py
+│       ├── manifest.json
+│       ├── config_flow.py
+│       ├── sensor.py
+│       ├── strings.json
+│       ├── translations/
+│       │   └── zh-Hans.json
+│       └── icon.png
+├── README.md
+├── info.md
+├── hacs.json
+└── release.sh
