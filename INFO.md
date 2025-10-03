@@ -1,4 +1,6 @@
-## 莆田水费集成
+## 莆田水费 HomeAssistant 集成
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
 这个集成允许你在 Home Assistant 中监控莆田水务的水费余额和账单信息。
 
