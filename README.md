@@ -18,7 +18,7 @@
 
 1. 确保已安装 [HACS](https://hacs.xyz/)
 2. 在 HACS 中添加自定义仓库：
-   - 仓库：`lambilly/putian_water`
+   - 仓库：`lambilly/hass_putian_water`
    - 类别：集成
 3. 搜索并安装 "莆田水费"
 4. 重启 Home Assistant
