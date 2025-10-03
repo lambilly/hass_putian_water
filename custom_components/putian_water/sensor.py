@@ -34,6 +34,7 @@ async def async_setup_entry(
     sensors = [
         PutianWaterBalanceSensor(coordinator, entry),
         PutianWaterLastBillSensor(coordinator, entry),
+        PutianWaterUpdateTimeSensor(coordinator, entry),
     ]
     
     async_add_entities(sensors)
@@ -59,7 +60,7 @@ class PutianWaterCoordinator(DataUpdateCoordinator):
             bill_data = await self.api.get_payment_info()
             
             # 使用正确的方法获取当前时间
-            current_time = dt_util.now().isoformat()
+            current_time = dt_util.now()
             
             return {
                 "balance": self._process_balance_data(balance_data),
@@ -70,7 +71,7 @@ class PutianWaterCoordinator(DataUpdateCoordinator):
         except Exception as ex:
             _LOGGER.error("更新水费数据失败: %s", ex)
             # 返回空数据而不是抛出异常，避免传感器不可用
-            current_time = dt_util.now().isoformat()
+            current_time = dt_util.now()
             return {
                 "balance": {},
                 "bill": {},
@@ -186,7 +187,7 @@ class PutianWaterBalanceSensor(PutianWaterSensor):
         data = self.coordinator.data["balance"]
         attrs = {
             "query_year": self.coordinator.data.get("query_year", ""),
-            "last_update": self.coordinator.data.get("last_update", ""),
+            "last_update": self.coordinator.data["last_update"].isoformat() if self.coordinator.data.get("last_update") else "",
         }
         
         if "user" in data:
@@ -245,7 +246,7 @@ class PutianWaterLastBillSensor(PutianWaterSensor):
         data = self.coordinator.data["bill"]
         attrs = {
             "query_year": self.coordinator.data.get("query_year", ""),
-            "last_update": self.coordinator.data.get("last_update", ""),
+            "last_update": self.coordinator.data["last_update"].isoformat() if self.coordinator.data.get("last_update") else "",
         }
         
         # 添加基本信息
@@ -281,3 +282,43 @@ class PutianWaterLastBillSensor(PutianWaterSensor):
             attrs["error"] = self.coordinator.data["error"]
             
         return attrs
+
+
+class PutianWaterUpdateTimeSensor(PutianWaterSensor):
+    """更新时间传感器."""
+    
+    def __init__(self, coordinator, entry):
+        """初始化更新时间传感器."""
+        super().__init__(coordinator, entry, "update_time")
+        self._attr_name = "更新时间"
+        self._attr_unique_id = f"{entry.entry_id}_update_time"
+        self._attr_icon = "mdi:clock-check-outline"
+        self._attr_device_class = "timestamp"  # 使用timestamp设备类
+    
+    @property
+    def native_value(self):
+        """返回传感器值."""
+        if self.coordinator.data and "last_update" in self.coordinator.data:
+            return self.coordinator.data["last_update"]
+        return None
+    
+    @property
+    def extra_state_attributes(self):
+        """返回传感器属性."""
+        attrs = {
+            "query_year": self.coordinator.data.get("query_year", "") if self.coordinator.data else "",
+            "update_interval": "24小时",  # 显示更新间隔
+        }
+        
+        if self.coordinator.data and "error" in self.coordinator.data:
+            attrs["error"] = self.coordinator.data["error"]
+            
+        return attrs
+    
+    @property
+    def available(self):
+        """返回传感器是否可用."""
+        # 只有当有更新时间数据时才显示为可用
+        return (self.coordinator.data is not None and 
+                "last_update" in self.coordinator.data and 
+                self.coordinator.data["last_update"] is not None)
