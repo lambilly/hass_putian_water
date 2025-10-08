@@ -126,3 +126,49 @@ automation:
           entity_id:
             - sensor.water_balance
             - sensor.last_water_bill
+```
+# 故障排除
+# 常见问题
+## 认证失败
+
+检查 Token 和 Cookie 是否正确
+
+确保 Token 和 Cookie 没有过期
+
+无法获取数据
+
+检查网络连接
+
+确认水表号码正确
+
+查看 Home Assistant 日志获取详细错误信息
+
+数据不更新
+
+集成默认每24小时自动更新一次
+
+可以手动调用 homeassistant.update_entity 服务强制更新
+
+# 日志调试
+如需查看详细日志，在 configuration.yaml 中添加：
+
+```yaml
+logger:
+  default: info
+  logs:
+    custom_components.putian_water: debug
+```
+# 支持
+如果遇到问题，请：
+
+查看 Home Assistant 日志文件
+
+检查认证信息是否正确
+
+确认网络连接正常
+
+# 许可证
+MIT License
+
+# 贡献
+欢迎提交 Issue 和 Pull Request！
