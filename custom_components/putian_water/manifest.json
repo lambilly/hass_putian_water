@@ -1,7 +1,7 @@
 {
   "domain": "putian_water",
   "name": "莆田水费",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "code_owners": ["@lambilly"],
   "config_flow": true,
   "dependencies": [],
@@ -11,4 +11,5 @@
   "iot_class": "cloud_polling",
   "loggers": ["putian_water"],
   "translations": ["zh-Hans"]
+
 }
