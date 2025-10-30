@@ -13,6 +13,7 @@ from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
+from homeassistant.helpers.event import async_track_time_change  # 新增导入
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN
@@ -49,9 +50,28 @@ class PutianWaterCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name="莆田水费",
-            update_interval=timedelta(hours=24),  # 24小时更新一次
+            update_interval=timedelta(hours=24),  # 保持24小时间隔，但实际由定时任务控制
         )
         self.api = api
+        self.hass = hass
+        # 设置每天00:00的定时更新
+        self._setup_daily_update()
+    
+    def _setup_daily_update(self):
+        """设置每天00:00的定时更新."""
+        async def async_daily_update(now):
+            """每天00:00执行更新."""
+            _LOGGER.debug("执行每日定时更新")
+            await self.async_refresh()
+        
+        # 取消现有的定时器（如果有）
+        if hasattr(self, '_update_listener'):
+            self._update_listener()
+        
+        # 设置新的定时器，每天00:00触发 - 使用正确的方式
+        self._update_listener = async_track_time_change(
+            self.hass, async_daily_update, hour=0, minute=0, second=0
+        )
     
     async def _async_update_data(self):
         """获取最新数据."""
@@ -293,13 +313,25 @@ class PutianWaterUpdateTimeSensor(PutianWaterSensor):
         self._attr_name = "更新时间"
         self._attr_unique_id = f"{entry.entry_id}_update_time"
         self._attr_icon = "mdi:clock-check-outline"
-        self._attr_device_class = "timestamp"  # 使用timestamp设备类
+        # 移除设备类，以便显示具体的更新时间而不是相对时间
+        self._attr_device_class = None
     
     @property
     def native_value(self):
-        """返回传感器值."""
+        """返回传感器值 - 格式化为具体的更新时间."""
         if self.coordinator.data and "last_update" in self.coordinator.data:
-            return self.coordinator.data["last_update"]
+            # 格式化为具体的更新时间，如：2025-12-20 10:01
+            update_time = self.coordinator.data["last_update"]
+            if isinstance(update_time, datetime):
+                return update_time.strftime("%Y-%m-%d %H:%M")
+            else:
+                # 如果是字符串，尝试转换
+                try:
+                    dt = dt_util.parse_datetime(update_time)
+                    if dt:
+                        return dt.strftime("%Y-%m-%d %H:%M")
+                except:
+                    pass
         return None
     
     @property
@@ -307,7 +339,7 @@ class PutianWaterUpdateTimeSensor(PutianWaterSensor):
         """返回传感器属性."""
         attrs = {
             "query_year": self.coordinator.data.get("query_year", "") if self.coordinator.data else "",
-            "update_interval": "24小时",  # 显示更新间隔
+            "update_schedule": "每天00:00自动更新",  # 显示更新计划
         }
         
         if self.coordinator.data and "error" in self.coordinator.data:

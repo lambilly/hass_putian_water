@@ -11,5 +11,4 @@
   "iot_class": "cloud_polling",
   "loggers": ["putian_water"],
   "translations": ["zh-Hans"]
-
 }
